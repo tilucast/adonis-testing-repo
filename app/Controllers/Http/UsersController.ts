@@ -1,32 +1,45 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import Profile from 'App/Models/Profile'
 import User from 'App/Models/User'
 import UserValidator from 'App/Validators/UserValidator'
 
 export default class UsersController {
 
     public async index() {
-        return await User.all()
+        return await User.query().preload('profile')
     }
 
     public async show({params}: HttpContextContract){
-        return await User.findOrFail(params.id)
+        const user = await User.query()
+        .where('id', params.id)
+        .preload('profile') 
+        .firstOrFail()
+
+        return user.serialize({
+            fields: {omit: ['created_at', 'updated_at']},
+            relations: {
+                profile: {
+                    fields: ['avatar', 'user_id']
+                }
+            }
+        })
     }
 
     public async store({request}: HttpContextContract){
 
-        try{
-            const user = await request.validate(UserValidator)
+        
+        const user = await request.validate(UserValidator)
 
-            const validatedUser = await User.create({
-                email: user.email,
-                password: user.password
-            })
+        const validatedUser = new User()
+        validatedUser.email = user.email
+        validatedUser.password = user.password
 
-            return {message: `User with id: ${validatedUser.id} was created successfully.`}
+        await validatedUser.related('profile').create({
+            avatar: user.avatar
+        })
 
-        }catch(error){
-            return error
-        }
+        return {message: `User with id: ${validatedUser.id} was created successfully.`}
+
         
     }
 
