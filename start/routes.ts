@@ -49,7 +49,7 @@ Route.group(() => {
 //})
 
 //Route.get('users', 'UsersController.index')
-Route.resource('posts', 'PostsController')
+//Route.resource('posts', 'PostsController')
 
 Route.resource('lists', 'ListsController')
 
@@ -64,7 +64,7 @@ Route.post('/session/change', async ({session, params, request}) => {
 
     return {message: 'User logged successfully'}
 })
-
+ 
 Route.get('/middleware', async ({request}) => {
     console.log(request?.country);
     
@@ -74,5 +74,7 @@ Route.get('/middleware', async ({request}) => {
 Route.get('/unauthorized', async () => {
     throw new UnAuthorizedException('Not allowed.')
 })
-
-Route.resource('users', 'UsersController')
+Route.group(() => {
+    Route.resource('users', 'UsersController').apiOnly()
+    Route.resource('posts', 'UsersPostsController').apiOnly()
+})

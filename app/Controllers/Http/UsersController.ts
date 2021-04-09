@@ -1,12 +1,11 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Profile from 'App/Models/Profile'
 import User from 'App/Models/User'
 import UserValidator from 'App/Validators/UserValidator'
 
 export default class UsersController {
 
     public async index() {
-        return await User.query().preload('profile')
+        return await User.query().preload('profile').preload('posts')
     }
 
     public async show({params}: HttpContextContract){

@@ -1,7 +1,8 @@
 import { DateTime } from 'luxon'
 import Encryption from '@ioc:Adonis/Core/Encryption'
-import { BaseModel, column, computed, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, computed, hasMany, HasOne, hasOne, HasMany } from '@ioc:Adonis/Lucid/Orm'
 import Profile from './Profile'
+import Post from './Post'
 
 export default class User extends BaseModel {
 
@@ -32,6 +33,9 @@ export default class User extends BaseModel {
 
   @hasOne(() => Profile)
   public profile: HasOne<typeof Profile>
+
+  @hasMany(() => Post)
+  public posts: HasMany<typeof Post>
 
   @computed()
   public get randomshit (){
